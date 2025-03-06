@@ -10,8 +10,3 @@
     - sort grocery list by food type
     - allow users to input preferences and filter accordingly (ex. vegetarian, no pork)
     - don't repeat from previous week
-
-# TODO:
-    - create separate validate function
-    - handle dinners not as int
-    - sort dinners by number of lunches (ex. start with high leftover dinner, then no leftover etc)

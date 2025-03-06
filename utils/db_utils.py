@@ -1,11 +1,12 @@
 import random
 import sqlite3
-
+import sys
 
 MEAL_INFO_DB = 'meal_info.db'
 
 # List of meals to insert in db
 # Format is name, servings, ingredients, cuisine, protein, level of difficulty
+# TODO: Fill out meal details
 meals = [
     ("Chicken and Rice", 1, "chicken, rice", None, "chicken", 1),
     ("Biscuits and Gravy", 1.5, "breakfast sausage, biscuits, country gravy, eggs", "breakfast", "breakfast sausage", 1),
@@ -91,19 +92,6 @@ def insert_meal_data():
     conn.close()
 
 
-def generate_random_offset(cursor):
-    # cursor.execute("SELECT COUNT(*) FROM dinners")
-    # total_rows = cursor.fetchone()[0]
-    # random_offset = random.randint(0, total_rows-1)
-    cursor.execute("SELECT MAX(ROWID) FROM dinners WHERE ")
-    max_rowid = cursor.fetchone()
-    if max_rowid is None:
-        #throw error or something
-        print("error")
-    random_offset = random.randint(0, max_rowid)
-    return random_offset
-
-
 # Retrieve all or specified number of random meals from the db
 def get_dinners(num=None):
     conn = sqlite3.connect(MEAL_INFO_DB)
@@ -128,6 +116,7 @@ def get_dinner_by_servings(num_servings):
     max_rowid = cursor.fetchone()[0]
     if max_rowid is None:
         print("error")
+        sys.exit(1)
     random_rowid = random.randint(0, max_rowid)
     dinner = None
     while not dinner:
@@ -144,9 +133,11 @@ def get_dinner_by_max_servings(max_servings):
     conn = sqlite3.connect(MEAL_INFO_DB)
     cursor = conn.cursor()
     cursor.execute("SELECT MAX(ROWID) FROM dinners WHERE servings_in_days <= ?", (max_servings,))
-    max_rowid = cursor.fetchone()[0]
+    max_rowid = cursor.fetchone()
     if max_rowid is None:
         print("error")
+    else:
+        max_rowid = max_rowid[0]
     random_rowid = random.randint(0, max_rowid)
     dinner = None
     while not dinner:

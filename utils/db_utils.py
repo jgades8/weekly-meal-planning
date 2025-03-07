@@ -107,7 +107,8 @@ def get_dinners(num=None):
     return dinners
 
 
-# Returns 1 dinner with servings <= input max servings
+# Returns 1 dinner with servings between input and input+1, inclusive
+# For example, if 1.5 was passed in, the dinner returned would have 1.5 <= servings <=2.5
 def get_dinner_by_servings(num_servings):
     conn = sqlite3.connect(MEAL_INFO_DB)
     cursor = conn.cursor()
@@ -129,6 +130,7 @@ def get_dinner_by_servings(num_servings):
     return dinner
 
 
+# Returns 1 dinner with servings <= input max servings
 def get_dinner_by_max_servings(max_servings):
     conn = sqlite3.connect(MEAL_INFO_DB)
     cursor = conn.cursor()
@@ -166,7 +168,7 @@ def get_dinners_by_attribute(attribute, value):
 def get_dinners_by_not_parameter(attribute, value):
     conn = sqlite3.connect(MEAL_INFO_DB)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM dinners WHERE ? != ?", (attribute, value,))
+    cursor.execute("SELECT * FROM dinners WHERE LOWER(?) != LOWER(?)", (attribute, value,))
     dinners = cursor.fetchall()
     conn.close()
     return dinners

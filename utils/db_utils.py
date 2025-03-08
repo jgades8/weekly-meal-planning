@@ -36,7 +36,7 @@ meals = [
     ("Quesadilla", 3, None, None, None, None),
     ("Pigs in a Blanket", 1, None, None, None, None),
     ("Chicken Sandwich", 1, None, None, None, None),
-    ("Pasta Milano", 3.5, None, None, None, None),
+    ("pasta milano", 3.5, None, None, None, None),
     ("Fettucine Alfredo", 3, None, None, None, None),
     ("Sausages", 1, None, None, None, None),
     ("Pasta Carbonara", 2, None, None, None, None),
@@ -107,13 +107,13 @@ def get_dinners(num=None):
     return dinners
 
 
-# Returns 1 dinner with servings between input and input+1, inclusive
-# For example, if 1.5 was passed in, the dinner returned would have 1.5 <= servings <=2.5
+# Returns 1 dinner with servings between input and input+0.5, inclusive
+# For example, if 1.5 was passed in, the dinner returned would have 1.5 <= servings <=2
 def get_dinner_by_servings(num_servings):
     conn = sqlite3.connect(MEAL_INFO_DB)
     cursor = conn.cursor()
     cursor.execute("SELECT MAX(ROWID) FROM dinners WHERE servings_in_days >= ? AND servings_in_days <= ?",
-                   (num_servings, num_servings+1,))
+                   (num_servings, num_servings+0.5,))
     max_rowid = cursor.fetchone()[0]
     if max_rowid is None:
         print("error")
@@ -122,7 +122,7 @@ def get_dinner_by_servings(num_servings):
     dinner = None
     while not dinner:
         cursor.execute("SELECT * FROM dinners WHERE servings_in_days >= ? AND servings_in_days <= ? LIMIT 1 OFFSET ?",
-                       (num_servings, num_servings+1, random_rowid,))
+                       (num_servings, num_servings+0.5, random_rowid,))
         dinner = cursor.fetchone()
         random_rowid = (random_rowid % max_rowid) + 1
     print(f"found dinner {dinner}")
@@ -157,7 +157,8 @@ def get_dinner_by_max_servings(max_servings):
 def get_dinners_by_attribute(attribute, value):
     conn = sqlite3.connect(MEAL_INFO_DB)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM dinners WHERE LOWER(?) = LOWER(?)", (attribute, value,))
+    query = f"SELECT * FROM dinners WHERE {attribute.lower()} = '{value.lower()}'"
+    cursor.execute(query)
     dinners = cursor.fetchall()
     conn.close()
     return dinners
@@ -168,7 +169,8 @@ def get_dinners_by_attribute(attribute, value):
 def get_dinners_by_not_parameter(attribute, value):
     conn = sqlite3.connect(MEAL_INFO_DB)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM dinners WHERE LOWER(?) != LOWER(?)", (attribute, value,))
+    query = f"SELECT * FROM dinners WHERE {attribute.lower()} != '{value.lower()}'"
+    cursor.execute(query)
     dinners = cursor.fetchall()
     conn.close()
     return dinners

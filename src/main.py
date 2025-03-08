@@ -188,6 +188,7 @@ def main():
         if response == "1":
             create_dinner_db()
             insert_meal_data()
+            print("Created meal database.")
         elif response == "2":
             # Take in any dinners definitely want, todo turn into list
             # dinner_wanted = input("...")

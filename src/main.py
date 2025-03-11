@@ -8,7 +8,8 @@ def generate_dinner_plan(dinners_wanted_list, num_dinners, num_lunches):
     dinner_plan = []
     dinner_names = []
     lunch_plan = []
-    ingredients_list = set()
+    ingredients_list = {}
+    remaining_dinners, remaining_lunches = float(num_dinners), float(num_lunches)
 
     # First, add any input dinners to plan
     for dinner_wanted in dinners_wanted_list:
@@ -16,24 +17,23 @@ def generate_dinner_plan(dinners_wanted_list, num_dinners, num_lunches):
         if meal_name not in dinner_names:
             dinner_names.append(meal_name)
             if ingredients:
-                ingredients = ingredients.split(', ')
-                ingredients_list.update(ingredient for ingredient in ingredients)
+                add_ingredients_to_list(ingredients_list, ingredients)
 
             leftovers = servings-1 if servings-1 > 0 else 0
             dinner_info = {
-                "meal": meal_name,
+                "name": meal_name,
                 "leftovers": leftovers,
                 "ingredients": ingredients
             }
 
+            remaining_dinners = remaining_dinners - 1
+            remaining_lunches = remaining_lunches - leftovers
             while leftovers > 0:
                 lunch_plan.append(meal_name)
-                leftovers = leftovers - 1
+                leftovers = max(0, leftovers - 1)
 
             dinner_plan.append(dinner_info)
 
-    remaining_dinners = float(num_dinners) - len(dinner_plan)
-    remaining_lunches = float(num_lunches) - len(lunch_plan)
     completed_plan = False
     if remaining_dinners == 0:
         completed_plan = True
@@ -41,7 +41,7 @@ def generate_dinner_plan(dinners_wanted_list, num_dinners, num_lunches):
         if remaining_dinners == 1:
             # Add 1 to remaining lunches because need servings for 1 dinner
             dinner = get_dinner_by_servings(remaining_lunches + 1)
-            completed_plan = add_dinner_to_plan(dinner, dinner_names, ingredients_list, dinner_plan, lunch_plan, remaining_lunches)
+            completed_plan, _ = add_dinner_to_plan(dinner, dinner_names, ingredients_list, dinner_plan, lunch_plan, remaining_lunches)
         else:
             # Add 1 to remaining lunches because need servings for 1 dinner
             dinner = get_dinner_by_max_servings(remaining_lunches + 1)
@@ -59,8 +59,7 @@ def add_dinner_to_plan(dinner, dinner_names, ingredients_list, dinner_plan, lunc
         dinner_names.append(meal_name)
         # TODO: Add quantity of ingredients, maybe type of ingredient
         if ingredients:
-            ingredients = ingredients.split(', ')
-            ingredients_list.update(ingredient for ingredient in ingredients)
+            add_ingredients_to_list(ingredients_list, ingredients)
 
         leftovers = servings-1 if servings-1 > 0 else 0
         dinner_info = {
@@ -88,7 +87,14 @@ def replace_dinner_in_plan(dinner_names, dinner_plan, lunch_plan):
             print("Which dinner would you like to replace? Options are:")
             for i, dinner in enumerate(dinner_names):
                 print(f"{i} - {dinner}")
-            to_replace = input("Please enter an integer: ") # TODO: validate input
+            while True:
+                to_replace = input("Please enter a valid integer option: ")
+                try:
+                    if 0 <= int(to_replace) < len(dinner_names):
+                        break
+                except Exception as ex:
+                    print(f"Input not valid: {ex}")
+                    continue
             dinner_to_replace = dinner_names[int(to_replace)]
             for dinner in dinner_plan:
                 if dinner["name"] == dinner_to_replace:
@@ -109,6 +115,20 @@ def replace_dinner_in_plan(dinner_names, dinner_plan, lunch_plan):
             # TODO: Update list of ingredients, may be easier to just create new list or need quantity
         else:
             break
+
+
+def add_ingredients_to_list(ingredients_list, new_ingredients):
+    ingredients = new_ingredients.split('; ')
+    for ingredient in ingredients:
+        # Ingredient format will be: name,quantity,store_category (ex. chicken,2,meat)
+        ingredient_name, quantity, store_category = ingredient.split(',')
+        if ingredient_name in ingredients_list:
+            # Update quantity
+            total_quantity = ingredients_list[ingredient_name][0] + int(quantity)
+            ingredients_list[ingredient_name][0] = total_quantity
+        else:
+            # Add new ingredient and quantity
+            ingredients_list[ingredient_name] = [int(quantity), store_category]
 
 
 def get_create_dinner_plan_user_input():
@@ -190,9 +210,6 @@ def main():
             insert_meal_data()
             print("Created meal database.")
         elif response == "2":
-            # Take in any dinners definitely want, todo turn into list
-            # dinner_wanted = input("...")
-            # dinner_wanted_tuple = get_dinners_by_attribute("name", dinner_wanted)
             num_dinners, num_lunches = get_create_dinner_plan_user_input()
             dinners_to_include = get_dinners_to_include()
             dinner_names, dinner_plan, lunch_plan, ingredients_list = generate_dinner_plan(

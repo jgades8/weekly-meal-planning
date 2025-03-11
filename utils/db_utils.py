@@ -6,10 +6,11 @@ MEAL_INFO_DB = 'meal_info.db'
 
 # List of meals to insert in db
 # Format is name, servings, ingredients, cuisine, protein, level of difficulty (on a scale of 1-5)
+# breakfast sausage, biscuits, country gravy, eggs
 # TODO: Fill out meal details
 meals = [
-    ("chicken and rice", 1, "chicken, rice", "american", "chicken", 1),
-    ("biscuits and gravy", 1.5, "breakfast sausage, biscuits, country gravy, eggs", "breakfast", "breakfast sausage", 1),
+    ("chicken and rice", 1, "chicken,1,meat; rice,1,general", "american", "chicken", 1),
+    ("biscuits and gravy", 1.5, None, "breakfast", "breakfast sausage", 1),
     ("chilli", 4, None, "american", "beef", 2),
     ("buffalo chicken", 2, None, "american", "chicken", 2),
     ("brown butter gnocchi", 1, None, "pasta", "none", 1),

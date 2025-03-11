@@ -14,3 +14,5 @@ The only requirement to run this program is Python.
     - Allow users to input preferences and filter accordingly (ex. vegetarian, no pork)
     - Don't repeat from previous week
     - add max level of difficulty
+    - this could run into difficulties with large number of dinners where there is no solution
+        - maybe add a max number of dinners or lunches??

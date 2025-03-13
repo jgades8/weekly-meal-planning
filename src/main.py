@@ -11,9 +11,9 @@ def generate_dinner_plan(dinners_wanted_list, num_dinners, num_lunches):
     ingredients_list = {}
     remaining_dinners, remaining_lunches = float(num_dinners), float(num_lunches)
 
-    # First, add any input dinners to plan
+    # First, add any wanted dinners to plan
     for dinner_wanted in dinners_wanted_list:
-        _, meal_name, servings, ingredients, type_of_cuisine, protein, level_of_difficulty = dinner_wanted[0]
+        _, meal_name, servings, ingredients, type_of_cuisine, protein, level_of_difficulty = dinner_wanted
         if meal_name not in dinner_names:
             dinner_names.append(meal_name)
             if ingredients:
@@ -49,7 +49,6 @@ def generate_dinner_plan(dinners_wanted_list, num_dinners, num_lunches):
             if added_meal:
                 remaining_dinners = remaining_dinners - 1
 
-    print(dinner_names)
     return dinner_names, dinner_plan, lunch_plan, ingredients_list
 
 
@@ -57,7 +56,6 @@ def add_dinner_to_plan(dinner, dinner_names, ingredients_list, dinner_plan, lunc
     _, meal_name, servings, ingredients, type_of_cuisine, protein, level_of_difficulty = dinner
     if meal_name not in dinner_names:
         dinner_names.append(meal_name)
-        # TODO: Add quantity of ingredients, maybe type of ingredient
         if ingredients:
             add_ingredients_to_list(ingredients_list, ingredients)
 
@@ -80,26 +78,29 @@ def add_dinner_to_plan(dinner, dinner_names, ingredients_list, dinner_plan, lunc
 
 
 def replace_dinner_in_plan(dinner_names, dinner_plan, lunch_plan):
-    while True:
+    get_input = True
+    while get_input:
         resp = input("Would you like to replace any meals in the generated dinner plan?\n"
                      "Enter Y for yes. ")
         if resp.upper() == "Y":
             print("Which dinner would you like to replace? Options are:")
             for i, dinner in enumerate(dinner_names):
                 print(f"{i} - {dinner}")
-            while True:
+            valid_input, to_replace = False, ""
+            while not valid_input:
                 to_replace = input("Please enter a valid integer option: ")
                 try:
                     if 0 <= int(to_replace) < len(dinner_names):
-                        break
+                        valid_input = True
                 except Exception as ex:
                     print(f"Input not valid: {ex}")
-                    continue
+
             dinner_to_replace = dinner_names[int(to_replace)]
             for dinner in dinner_plan:
                 if dinner["name"] == dinner_to_replace:
                     servings = dinner["leftovers"] + 1
-                    while True:
+                    replaced = False
+                    while not replaced:
                         _, meal_name, servings, ingredients, type_of_cuisine, protein, level_of_difficulty = (
                             get_dinner_by_servings(servings))
                         if meal_name not in dinner_names:
@@ -108,13 +109,13 @@ def replace_dinner_in_plan(dinner_names, dinner_plan, lunch_plan):
                             dinner_names.remove(dinner_to_replace)
                             dinner_names.append(meal_name)
                             lunch_plan = [meal_name if lunch == dinner_to_replace else lunch for lunch in lunch_plan]
-                            break
+                            replaced = True
             print(dinner_names)
             print(lunch_plan)
 
             # TODO: Update list of ingredients, may be easier to just create new list or need quantity
         else:
-            break
+            get_input = False
 
 
 def add_ingredients_to_list(ingredients_list, new_ingredients):
@@ -124,11 +125,20 @@ def add_ingredients_to_list(ingredients_list, new_ingredients):
         ingredient_name, quantity, store_category = ingredient.split(',')
         if ingredient_name in ingredients_list:
             # Update quantity
-            total_quantity = ingredients_list[ingredient_name][0] + int(quantity)
+            total_quantity = ingredients_list[ingredient_name][0] + float(quantity)
             ingredients_list[ingredient_name][0] = total_quantity
         else:
             # Add new ingredient and quantity
-            ingredients_list[ingredient_name] = [int(quantity), store_category]
+            ingredients_list[ingredient_name] = [float(quantity), store_category]
+
+
+def print_ingredients_list(ingredients_list):
+    sorted_ingredients = {"produce": [], "deli": [], "meat": [], "bakery": [], "dry goods": [], "frozen": [], "dairy": []}
+    for ingredient in ingredients_list:
+        store_loc = ingredients_list[ingredient][1]
+        quantity = ingredients_list[ingredient][0]
+        sorted_ingredients[store_loc].append(f"{ingredient}-{quantity}")
+    print(sorted_ingredients)
 
 
 def get_create_dinner_plan_user_input():
@@ -163,19 +173,38 @@ def get_query_database_user_input():
 
 def get_dinners_to_include():
     dinners_to_include = []
-    while True:
+    get_more_dinners = True
+    while get_more_dinners:
         response = input("Are there any specific dinners you'd like included? Enter Y for yes. ")
         if response.upper() == "Y":
             dinner_name = input("What dinner would you like to include? ")
             # Check if dinner is in database
-            dinner = get_dinners_by_attribute("name", dinner_name)
-            if dinner:
-                dinners_to_include.append(dinner)
+            dinners = get_dinners_by_attribute("name", dinner_name)
+            if dinners: # TODO: Handle if multiple dinners have the same name
+                if len(dinners) > 1:
+                    # Found multiple dinners with the same name, have the user select which one they want
+                    for i, dinner in enumerate(dinners):
+                        print(f"{i} - {dinner}")
+                    tmp_input = ""
+                    selected_specific_dinner = False
+                    while not selected_specific_dinner:
+                        try:
+                            tmp_input = input("Multiple dinners found. Which one would you like?\nEnter an integer. ")
+                            if validate_positive_number(tmp_input):
+                                dinner_int = int(tmp_input)
+                                dinners_to_include.append(dinners[dinner_int])
+                                selected_specific_dinner = True
+                            else:
+                                raise Exception
+                        except: # TODO: Add specific exception
+                            print(f"{tmp_input} is not a valid input.")
+                else:
+                    dinners_to_include.append(dinners[0])
                 print(f"{dinner_name} will be included in the plan.")
             else:
                 print(f"{dinner_name} is not a valid dinner name.")
         else:
-            break
+            get_more_dinners = False
     return dinners_to_include
 
 
@@ -198,8 +227,10 @@ def validate_attribute(input):
 
 
 def main():
-    while True:
-        response = input("Please enter an integer from the following options. To exit, enter 0.\n"
+    done = False
+    while not done:
+        response = input("Please enter an integer from the following options.\n"
+                         "0 - Exit.\n"
                          "1 - Create database.\n"
                          "2 - Generate dinner plan.\n"
                          f"3 - List all meals with specific attribute. Ex. List all meals with protein of chicken.\n"
@@ -215,10 +246,10 @@ def main():
             dinner_names, dinner_plan, lunch_plan, ingredients_list = generate_dinner_plan(
                 dinners_to_include, num_dinners, num_lunches)
             print(f"Generated dinner plan with {num_dinners} dinners and at least {num_lunches} lunches.")
-            # print(dinner_plan)
+            print(f"Dinners are {dinner_names}")
             print(lunch_plan)
-            print(ingredients_list)
-            dinner_plan = replace_dinner_in_plan(dinner_names, dinner_plan, lunch_plan)
+            print_ingredients_list(ingredients_list)
+            replace_dinner_in_plan(dinner_names, dinner_plan, lunch_plan)
         elif response == "3":
             attribute, value = get_query_database_user_input()
             filtered_dinners = get_dinners_by_attribute(attribute, value)
@@ -241,9 +272,9 @@ def main():
                 print(f"There are no dinners with {attribute} that is not {value}")
         elif response == "5":
             # TODO: Create get input and add meal to db
-            break
+            print("This is not functioning yet :)")
         elif response == "0":
-            break
+            done = True
         else:
             print(f"{response} is not a valid input")
 

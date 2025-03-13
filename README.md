@@ -10,7 +10,6 @@ The only requirement to run this program is Python.
     - Specify days of the week
     - Limit number of repeat proteins (ex. may days of 2-3 with chicken)
     - Limit number of repeat cuisines
-    - Sort grocery list by food type
     - Allow users to input preferences and filter accordingly (ex. vegetarian, no pork)
     - Don't repeat from previous week
     - add max level of difficulty

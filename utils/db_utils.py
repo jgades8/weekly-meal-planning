@@ -9,6 +9,7 @@ MEAL_INFO_DB = 'meal_info.db'
 # ingredient store location options are: produce, deli, meat, bakery, dry goods, frozen, dairy
 # TODO: Fill out meal details
 # TODO: Maybe make a sides db for ingredients??
+# meal ideas: chicken noodle soup, broccoli cheddar panera soup, fried rice
 meals = [
     ("chicken and rice", 1, "chicken,1,meat; rice,1,dry goods", "american", "chicken", 1),
     ("biscuits and gravy", 1.5, "breakfast sausage,1,meat; biscuits,1,dairy; country gravy,1,dry goods; eggs,3,dairy", 
@@ -47,8 +48,8 @@ meals = [
     ("beef burritos", 1.5, None, "texmex", "beef", 1),
     ("chicken fajitas", 1.5, None, "texmex", "chicken", 1),
     ("sesame noodles", 3, None, "asian", "pork", 3),
-    ("quesadilla", 3, None, "texmex", "chicken", 4),
-    ("quesadilla", 3, None, "texmex", "steak", 4),
+    ("quesadilla", 2.5, None, "texmex", "chicken", 4),
+    ("quesadilla", 2.5, None, "texmex", "steak", 4),
     ("pigs in a blanket", 1, None, "american", "hot dog", 2),
     ("chicken sandwich", 1, None, "sandwich", "chicken", 1),
     ("pasta milano", 3.5, None, "pasta", "chicken", 4),
@@ -74,7 +75,29 @@ meals = [
     ("philly cheesesteak", 2, None, "sandwich", "beef", 2),
     ("gnocchi with asparagus and miso butter", 1, "gnocchi,1,dry goods; asparagus,0.5,produce; shallot,1,produce; "
                                                   "garlic,3,produce; light miso,1,dry goods; parmigiano-reggiano,0.25,deli",
-        "pasta", "none", 2)
+        "pasta", "none", 2),
+    ("orange chicken", 2, "chicken thighs,4,meat; cornstarch,0.3,dry goods; vegetable oil,0.3,dry goods; orange,5,produce; "
+                          "white vinegar,0.2.dry goods; brown sugar,0.3,dry goods; soy sauce,0.2,dry goods; garlic,2,produce; "
+                          "ginger powder,0.25,dry goods",
+        "asian", "chicken", 3),
+    ("cavatelli with sausage, peppers, and oregano", 3, "noodles,1,dry goods; italian sausage,1,meat; yellow onion,"
+                                                        "1,produce; bay leaf,1,dry goods; garlic,4,produce; tomato paste,"
+                                                        "3,dry goods; chicken stock,0.5,dry goods; pepper,3,produce; "
+                                                        "sherry vinegar,0.3,dry goods; heavy cream,0.5,dairy; "
+                                                        "parmigiano-reggiano,0.25,deli",
+        "pasta", "sausage", 3),
+    ("grilled cheese", 1, "dinner bread,0.5,bakery; sharp cheddar cheese,0.5,dairy; tomato soup,2,dry goods", "sandwich",
+        "none", 1),
+    ("garganelli with vodka sauce", 2.5, "noodles,1,dry goods; shallot,1,produce; garlic,2,produce; red thai chile,1,produce; "
+                                         "tomato paste,3,dry goods; vodka,0.25,liquor; heavy cream,0.75,dairy; "
+                                         "parmigiano-reggiano,0.75,deli; basil,0.3,produce",
+        "pasta", "none", 2),
+    ("ravioli with vodka sauce", 1, "dinner bread,0.5,bakery; ravioli,2,dairy; vodka sauce,1,dry goods", "pasta", "none", 1),
+    ("rice bowl", 1, "chicken,1,meat; rice,1,dry goods; black beans,1,dry goods, corn,1,dry goods; avocado,1,produce; "
+                     "chips,0.5,dry goods; salsa,0.5,dry goods", "texmex", "chicken", 2),
+    ("chicken with mediterranean salad", 2, "chicken,2,meat; roma tomatoes,4,produce; cucumber,1,produce; red onion,0.5"
+                                            ",produce; feta,1,deli; red wine vinegar,0.2,dry goods; kalamata olives,1,"
+                                            "dry goods", "greek", "chicken", 1)
 ]
 
 

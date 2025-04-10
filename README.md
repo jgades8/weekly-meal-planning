@@ -15,3 +15,7 @@ The only requirement to run this program is Python.
     - add max level of difficulty
     - this could run into difficulties with large number of dinners where there is no solution
         - maybe add a max number of dinners or lunches??
+    - option to filter and then select to be included
+        - ex. print out all pastas and include one in plan
+    - add specific exceptions
+    - add docstrings

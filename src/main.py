@@ -1,10 +1,17 @@
 from utils.db_utils import *
 
 ATTRIBUTES = ["name", "servings_in_days", "ingredients", "type_of_cuisine", "protein", "level_of_difficulty"]
-# TODO: Create a class and have some vars as part of class
+# TODO: Create a class and have some vars as part of class?
 
 
 def generate_dinner_plan(dinners_wanted_list, num_dinners, num_lunches):
+    """
+
+    :param dinners_wanted_list: list of dinners to include in generated plan
+    :param num_dinners: total number of dinners required
+    :param num_lunches: total number of lunches required
+    :return: dinner_names, dinner_plan, lunch_plan, ingredients_list
+    """
     dinner_plan = []
     dinner_names = []
     lunch_plan = []
@@ -180,7 +187,7 @@ def get_dinners_to_include():
             dinner_name = input("What dinner would you like to include? ")
             # Check if dinner is in database
             dinners = get_dinners_by_attribute("name", dinner_name)
-            if dinners: # TODO: Handle if multiple dinners have the same name
+            if dinners:
                 if len(dinners) > 1:
                     # Found multiple dinners with the same name, have the user select which one they want
                     for i, dinner in enumerate(dinners):
